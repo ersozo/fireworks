@@ -26,6 +26,22 @@ class AnaSayfa extends StatefulWidget {
 }
 
 class _AnaSayfaState extends State<AnaSayfa> {
+
+  void kullanicilariGetir() async {
+
+    var snapsahot = await Firestore.instance.collection('kullanicilar').getDocuments();
+    snapsahot.documents.forEach((doc) {
+      print(doc.data);
+    });
+  }
+
+  @override
+  void initState() { 
+    super.initState();
+    kullanicilariGetir();
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
