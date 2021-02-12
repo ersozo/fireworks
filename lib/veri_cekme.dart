@@ -81,7 +81,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
   void kullaniciOlustur() async {
     var doc = await db
         .collection('kullanicilar')
-        .document('yq5kuxk3al2nBMG7Chto')
+        .document('PZXOLai7rQn5vK6iNzmp')
         .get();
 
     Kullanici kullanici_1 = Kullanici.dokumandanUret(doc);
@@ -101,25 +101,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder(
-        future: db
-            .collection('kullanicilar')
-            .document('PZXOLai7rQn5vK6iNzmp')
-            .get(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircularProgressIndicator();
-          }
-
-          Kullanici kullanici = Kullanici.dokumandanUret(snapshot.data);
-          return Center(
-            child: Text(
-              kullanici.soyad,
-            ),
-          );
-        },
-      ),
-    );
+    return Scaffold();
   }
 }
+
