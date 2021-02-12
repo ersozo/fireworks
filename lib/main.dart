@@ -108,14 +108,14 @@ class _AnaSayfaState extends State<AnaSayfa> {
             .document('PZXOLai7rQn5vK6iNzmp')
             .get(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircularProgressIndicator();
-          }
+          // if (!snapshot.hasData) {
+          //   return CircularProgressIndicator();
+          // }
 
           Kullanici kullanici = Kullanici.dokumandanUret(snapshot.data);
           return Center(
             child: Text(
-              kullanici.soyad,
+              kullanici.eposta,
             ),
           );
         },
