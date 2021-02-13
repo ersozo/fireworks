@@ -26,97 +26,94 @@ class AnaSayfa extends StatefulWidget {
 class _AnaSayfaState extends State<AnaSayfa> {
   final db = Firestore.instance;
 
-  void kullanicilariGetir() async {
-    var snapsahot = await db.collection('kullanicilar').getDocuments();
-    snapsahot.documents.forEach((doc) {
-      print(doc.data);
-    });
+  kullaniciEkle() {
+    db
+        .collection('kullanicilar')
+        .add(
+          {
+            'isim': 'Hakan',
+            'soyad': 'Demir',
+            'mail': 'hdemir@mail.com',
+            'avatar':
+                'https://cdn.pixabay.com/photo/2016/03/09/15/10/man-1246508__340.jpg',
+          },
+        )
+        .then((makbuz) => print(makbuz.documentID))
+        .catchError((hata) => print('kullanici eklenemedi: $hata'));
   }
 
-  void kimlikIlekullanicilariGetir() async {
-    var doc = await db
+  kimlikIlekullaniciEkle() {
+    db
         .collection('kullanicilar')
-        .document('PZXOLai7rQn5vK6iNzmp')
-        .get();
-
-    if (doc.exists) {
-      print(doc.data['isim']);
-    } else {
-      print('böyle bir doküman bulunmuyor...');
-    }
+        .document('abc')
+        .setData(
+          {
+            'isim': 'Hakan',
+            'soyad': 'Demir',
+            'mail': 'hdemir@mail.com',
+            'avatar':
+                'https://cdn.pixabay.com/photo/2016/03/09/15/10/man-1246508__340.jpg',
+          },
+        )
+        .then((_) => print('dokuman girildi'))
+        .catchError((hata) => print('kullanici eklenemedi: $hata'));
   }
 
-  void kullanicilariSirala() async {
-    var snapsahot = await db
+  kullaniciGuncelle() {
+    db
         .collection('kullanicilar')
-        .orderBy('yaş', descending: true)
-        .getDocuments();
-    snapsahot.documents.forEach((doc) {
-      print(doc.data);
-    });
+        .document('abc')
+        .updateData(
+          {
+            'isim': 'Zeynep',
+            'soyad': 'Erin',
+            'mail': 'zerin@mail.com',
+            'avatar':
+                'https://cdn.pixabay.com/photo/2014/09/17/20/03/profile-449912_960_720.jpg',
+          },
+        )
+        .then((_) => print('dokuman guncellendi'))
+        .catchError((hata) => print('hata olustu: $hata'));
   }
 
-  void kullanicilariSorgula() async {
-    var snapsahot = await db
+  kullaniciSil() {
+    db
         .collection('kullanicilar')
-        .where('yaş', isLessThanOrEqualTo: 60)
-        .getDocuments();
-    snapsahot.documents.forEach((doc) {
-      print(doc.data);
-    });
-  }
-
-  void kullaniciCokluSorgu() async {
-    QuerySnapshot snapsahot = await db
-        .collection('kullanicilar')
-        .where('soyad', isEqualTo: 'Kaya')
-        .where('yaş', isGreaterThan: 25)
-        .limit(1)
-        .getDocuments();
-    snapsahot.documents.forEach((DocumentSnapshot doc) {
-      print(doc.data);
-    });
-  }
-
-  void kullaniciOlustur() async {
-    var doc = await db
-        .collection('kullanicilar')
-        .document('yq5kuxk3al2nBMG7Chto')
-        .get();
-
-    Kullanici kullanici_1 = Kullanici.dokumandanUret(doc);
-
-    print(kullanici_1.id);
-    print(kullanici_1.isim);
-    print(kullanici_1.soyad);
-    print(kullanici_1.avatar);
-    print(kullanici_1.eposta);
+        .document('0OSwRFoVGejlfeCsEBS8')
+        .delete()
+        .then((_) => print('dokuman guncellendi'))
+        .catchError((hata) => print('hata olustu: $hata'));
   }
 
   @override
   void initState() {
     super.initState();
-    kullaniciOlustur();
+    kullaniciSil();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: db
-            .collection('kullanicilar')
-            .document('PZXOLai7rQn5vK6iNzmp')
-            .get(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: db.collection('kullanicilar').snapshots(),
         builder: (context, snapshot) {
-          // if (!snapshot.hasData) {
-          //   return CircularProgressIndicator();
-          // }
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
 
-          Kullanici kullanici = Kullanici.dokumandanUret(snapshot.data);
-          return Center(
-            child: Text(
-              kullanici.eposta,
-            ),
+          List<Kullanici> kullanicilar = snapshot.data.documents
+              .map((DocumentSnapshot doc) => Kullanici.dokumandanUret(doc))
+              .toList();
+
+          return ListView.builder(
+            itemCount: kullanicilar.length,
+            itemBuilder: (context, pozisyon) {
+              return ListTile(
+                title: Text(kullanicilar[pozisyon].isim),
+                subtitle: Text(kullanicilar[pozisyon].eposta),
+                leading: Image.network(kullanicilar[pozisyon].avatar),
+              );
+            },
           );
         },
       ),
