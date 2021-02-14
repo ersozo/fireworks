@@ -1,5 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Kullanici {
   final String id;
@@ -19,4 +20,15 @@ class Kullanici {
       eposta: doc.data['mail'],
     );
   }
+
+  factory Kullanici.firebasedenUret(FirebaseUser kullanici) {
+    return Kullanici(
+      id: kullanici.uid,
+      isim: kullanici.displayName,
+      avatar: kullanici.photoUrl,
+      eposta: kullanici.email,
+    );
+  }
+
+
 }
